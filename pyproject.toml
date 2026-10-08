@@ -5,7 +5,7 @@ description = "Reference application used throughout module CDS212 (DevOps)"
 requires-python = ">=3.12"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests"] # pytest only checks this folder for test_*.py or *test.py files
 addopts = "-q" # short output
 # Put the project root on sys.path so `from app import ...` resolves in the
 # tests. Without this, a bare `pytest` fails with ModuleNotFoundError while
