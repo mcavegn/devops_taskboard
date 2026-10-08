@@ -19,7 +19,7 @@ dist/
 
 # Local configs with secrets
 .env
-.env*
+#.env* keep example on repo
 
 # IDE-specific settings
 .settings/
