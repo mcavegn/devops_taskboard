@@ -1,0 +1,59 @@
+# Byte-Code and Caches
+__pycache__/
+*.py[cod]
+
+# Virtual Enviroments
+.venv/
+venv/
+
+# Test and Tool Caches
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# spread-artifacts
+build/
+dist/
+*.egg-info/
+
+# Local configs with secrets
+.env
+#.env* keep example on repo
+
+# IDE-specific settings
+.settings/
+
+# VS Code specific files
+.vscode/*
+!.vscode/*.json
+
+# Object and dependency files
+!*.mk
+!makefile
+!objects.mk
+!sources.mk
+!objects.list
+
+# Build artifacts
+*.map
+*.o
+*.d
+*.a
+*.dep
+*.su
+*.log
+*.bak
+*.tmp
+*.cyclo
+
+# Cube-generated backups
+*~
+*.swp
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Workspace-wide metadata (in parent folder)
+../.metadata/

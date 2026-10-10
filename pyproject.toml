@@ -5,8 +5,8 @@ description = "Reference application used throughout module CDS212 (DevOps)"
 requires-python = ">=3.12"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-q"
+testpaths = ["tests"] # pytest only checks this folder for test_*.py or *test.py files
+addopts = "-q" # short output
 # Put the project root on sys.path so `from app import ...` resolves in the
 # tests. Without this, a bare `pytest` fails with ModuleNotFoundError while
 # `python -m pytest` happens to work — a difference that bites in CI.
@@ -20,7 +20,7 @@ source = ["app"]
 fail_under = 80
 show_missing = true
 
-[tool.ruff]
+[tool.ruff] # rules for linter
 line-length = 100
 target-version = "py312"
 
