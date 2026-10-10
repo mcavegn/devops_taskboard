@@ -48,6 +48,16 @@ def list_tasks():
     return jsonify([t.to_dict() for t in _repo().list()])
 
 
+# Platzierung: bei den anderen /api/tasks-Routen. Sie kollidiert nicht mit
+# /api/tasks/<int:task_id>, weil "stats" keine Ganzzahl ist.
+@bp.get("/api/tasks/stats")
+def task_stats():
+    tasks = _repo().list()  # list[Task] – vorhandene Repository-Methode
+    total = len(tasks)
+    done = sum(1 for task in tasks if task.done)  # Task hat das Feld .done
+    return jsonify(total=total, done=done, open=total - done)
+
+
 @bp.post("/api/tasks")
 def create_task():
     payload = request.get_json(silent=True) or {}
