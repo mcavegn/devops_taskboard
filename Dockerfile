@@ -43,6 +43,8 @@ COPY --chown=appuser:appuser wsgi.py ./
 
 # ab hier läuft alles als appuser
 # Container lauscht auf Port 8000 (hier als Dokumentation und Hinweis für Werkzeuge)
+# erst mit docker run .... -p 8000:8000 wird Container-Prot geöffnet und von aussen erreicht (http://localhost:8000)
+# Syntax ist -p <Wirt-Port>:<Container-Port>
 USER appuser
 EXPOSE 8000
 

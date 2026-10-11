@@ -4,34 +4,53 @@
 #   docker compose down -v        stop and delete the volume
 
 services:
+  # erster Dienst, web (ein Container)
   web:
     build:
       context: .
+      # Das Image wird aus dem Dockerfile im aktuellen Verzeichnis . gebaut
       args:
         APP_VERSION: ${APP_VERSION:-1.0.0-local}
+        # reicht das Build-Argument APP_VERSION an das Dockkerfile weiter (dort ARG APP_VERSION)
     ports:
       - "8000:8000"
+      # veröffentlicht Port 8000 des Containers auf Port 8000 des Wirts, dadurch ist App im Browser erreichbar
     environment:
       # "db" is the DNS name of the database container on the compose network.
+      # Verbindungsstring zur Datenbank
+      # Hostname ist db, -> db wird mit aktueller IP aufgelöst, somit ist db immer zugreifbar, ohne ip zu kennen
+      # sobald diese URL gesetzt ist, wählt create_repository() in app/repositories.py die PostgresTaskRepository statt In-Memory-Speicher
       DATABASE_URL: postgresql://taskboard:${POSTGRES_PASSWORD:-changeme}@db:5432/taskboard
+      # wird von app/config.py gelesen
       LOG_LEVEL: INFO
       # Safe to run several workers here: Postgres holds the shared state.
+      # überschreibt default von 1 aus dem Image, hier gefahrlos weil der Zustand in postgres liegt
       GUNICORN_WORKERS: 2
     depends_on:
+    # wartet nur bis dependencie, hier db, gestartet wurde
       db:
+        # web braucht die Datenbank, aber gestartet heisst nicht bereit, es braucht ein paar sekunden für verbindung
+        # darum condition 
         # Without this condition web starts before Postgres accepts connections.
         condition: service_healthy
     restart: unless-stopped
 
+  # fertiges Image aus der registry mit Version 16 , alpine Variante (ist recht schlank)
   db:
     image: postgres:16-alpine # bewusst eine Version und nicht latest
     environment:
+      # postgres liest diese variablen beim errsten start und legt sie an
       POSTGRES_USER: taskboard
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
       POSTGRES_DB: taskboard
     volumes:
+       # benanntes Volume für die Daten
       - db-data:/var/lib/postgresql/data
+      # Volume db-data wird in postgres gemountet
     healthcheck:
+      # pg_isready -> Postgres eigenes Werkzeug (nimmt Server Verbindung an?) ist im postgres image enthalten
+      # CMD-SHELL führt Befehl in Shell aus (CMD würde direkt ausführen)
+      # interval -> alle 5 sek prüfen, timeou -> höchstens 3s warten auf Antwort, retries -> wiederholungen, bis es als unhealthie angesehen wird
       test: ["CMD-SHELL", "pg_isready -U taskboard -d taskboard"]
       interval: 5s
       timeout: 3s
@@ -40,3 +59,4 @@ services:
 
 volumes:
   db-data:
+# deklariert benanntes volume auf projektebene
