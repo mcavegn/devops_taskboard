@@ -2,14 +2,23 @@
 # faster build, and .env never lands in a layer by accident.
 .git
 .github
+# Versionsgeschichte gehört nicht in Laufzeit-Image
+
 .venv
 venv
 __pycache__
 *.pyc
+# lokale Umgebung und Bytecode werden im Image frisch installiert
+
 .pytest_cache
 .ruff_cache
 .coverage
 htmlcov
 tests
+# Testartefakte gehen nicht ins Produktionsimage
+
 .env
+# Enthält Passwörter -> SEHR KRITISCH
+
 *.md
+# keine Dokumentationen

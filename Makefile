@@ -1,6 +1,8 @@
 .DEFAULT_GOAL := help
 IMAGE ?= taskboard
+## für Docker: Image ist wie Klasse, Container wie Instanz der Klasse
 TAG   ?= local
+## Name des Image -> Zeiger
 
 .PHONY: help install run test lint fmt cov build up down clean
 
