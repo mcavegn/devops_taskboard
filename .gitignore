@@ -57,3 +57,6 @@ Thumbs.db
 
 # Workspace-wide metadata (in parent folder)
 ../.metadata/
+
+# Excercise Files
+Dockerfile.naiv
