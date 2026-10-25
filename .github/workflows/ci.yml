@@ -45,6 +45,12 @@ jobs:
       - name: Check style and import order
         run: ruff check .
 
+      - name: Lint
+        run: ruff check .
+
+      - name: Format check
+        run: ruff format --check .
+
   test:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
