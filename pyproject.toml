@@ -10,6 +10,8 @@ addopts = "-q" # short output
 # Put the project root on sys.path so `from app import ...` resolves in the
 # tests. Without this, a bare `pytest` fails with ModuleNotFoundError while
 # `python -m pytest` happens to work — a difference that bites in CI.
+# damit pytest sicher den richtigen path findet
+# "." legt Projektverzeichnis selbst auf sys.path
 pythonpath = ["."]
 
 [tool.coverage.run]

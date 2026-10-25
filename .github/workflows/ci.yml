@@ -1,0 +1,26 @@
+# Minimal starting point: one workflow, one job, a few echo steps.
+# Purpose: see the mechanism run before any real work is added.
+#
+# To use it, copy this file to the repository ROOT under:
+#   .github/workflows/ci.yml
+# GitHub Actions only reads workflows from that directory, never from code/.
+
+name: CI (minimal) # Anzeigename im Actions-Reiter
+
+on:
+  push:               # Trigger
+  workflow_dispatch:
+
+jobs:                 # ein oder mehrere Jobs
+  hello:              # Job-ID (frei wählbar)
+    name: First job
+    runs-on: ubuntu-latest  # Runner
+    steps:                  # Liste von Schritten
+      - name: Print a greeting
+        run: echo "The pipeline runs."
+
+      - name: Show the context
+        run: |
+          echo "Branch:  $GITHUB_REF_NAME"
+          echo "Commit:  $GITHUB_SHA"
+          echo "Runner:  $RUNNER_OS"
