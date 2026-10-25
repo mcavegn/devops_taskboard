@@ -8,7 +8,7 @@ bp = Blueprint("main", __name__)
 
 
 def _repo():
-    return current_app.extensions['repository']
+    return current_app.extensions["repository"]
 
 
 def _config():
