@@ -1,3 +1,13 @@
+# Full CI pipeline for the DevOps applications.
+# 
+# Jobs:
+#   lint  - static checks with ruff
+#   test  - test suite with coverage gate, on Python 3.11 and 3.12
+#   build - container image, only after lint and test are green
+#
+# Every `run:` step executes inside beispiel-app/ (defaults.working-directory).
+
+
 name: CI
 
 on:
@@ -6,6 +16,8 @@ on:
   pull_request:
   workflow_dispatch:
 
+# Least privilege: this pipeline only reads the repository. It creates no
+# releases and pushes no images, so it needs nothing beyond read access.
 permissions:
   contents: read
 
@@ -24,6 +36,7 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          # Path is relative to the repository root, not to working-directory.
           cache-dependency-path: ./requirements-dev.txt
 
       - name: Install dependencies
@@ -36,6 +49,7 @@ jobs:
     name: Test (Python ${{ matrix.python-version }})
     runs-on: ubuntu-latest
     strategy:
+      # Do not cancel 3.12 just because 3.11 failed - we want both results.
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
@@ -51,9 +65,15 @@ jobs:
       - name: Install dependencies
         run: pip install -r requirements-dev.txt
 
+      # Plain `pytest` works because pyproject.toml sets pythonpath = ["."],
+      # which puts the project root on sys.path so `from app import create_app`
+      # resolves. The coverage gate (fail_under = 80) also comes from
+      # pyproject.toml and fails the job below 80%.
       - name: Run tests with coverage gate
         run: pytest --cov=app --cov-report=xml --cov-report=term-missing
 
+      # upload-artifact@v4 rejects two uploads sharing a name, so only the 3.12
+      # matrix leg publishes the report.
       - name: Upload coverage report
         if: matrix.python-version == '3.12'
         uses: actions/upload-artifact@v4
@@ -65,10 +85,13 @@ jobs:
   build:
     name: Build image
     runs-on: ubuntu-latest
+    # Gate: build only starts after both other jobs succeed.
     needs: [lint, test]
     steps:
       - uses: actions/checkout@v4
 
+      # No push in week 5 - we only prove the image builds and starts. Pushing
+      # to a registry follows in week 6 (continuous deployment).
       - name: Build container image
         run: docker build --build-arg APP_VERSION=ci-${{ github.sha }} -t taskboard:ci .
 
