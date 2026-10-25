@@ -45,3 +45,29 @@ jobs:
 
       - name: Run tests with coverage gate
         run: pytest --cov=app --cov-report=term-missing
+
+  build:
+    name: Build image
+    runs-on: ubuntu-latest
+    needs: [lint, test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build container image
+        run: docker build --build-arg APP_VERSION=ci-${{ github.sha }} -t taskboard:ci .
+
+      - name: Smoke-test the image
+        run: |
+          docker run -d --name taskboard-ci -p 8000:8000 taskboard:ci
+          for i in $(seq 1 30); do
+            if curl -sf http://127.0.0.1:8000/health; then
+              echo "health check passed"
+              docker rm -f taskboard-ci
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "health check never passed"
+          docker logs taskboard-ci
+          docker rm -f taskboard-ci
+          exit 1
