@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    #branches: [main]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
@@ -30,4 +30,18 @@ jobs:
       - name: Check style and import order
         run: ruff check .
 
-# change for push
+  test:
+    name: Test (Python 3.12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests with coverage gate
+        run: pytest --cov=app --cov-report=term-missing
