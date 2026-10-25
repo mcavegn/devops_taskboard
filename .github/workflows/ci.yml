@@ -1,26 +1,31 @@
-# Minimal starting point: one workflow, one job, a few echo steps.
-# Purpose: see the mechanism run before any real work is added.
-#
-# To use it, copy this file to the repository ROOT under:
-#   .github/workflows/ci.yml
-# GitHub Actions only reads workflows from that directory, never from code/.
-
-name: CI (minimal) # Anzeigename im Actions-Reiter
+name: CI
 
 on:
-  push:               # Trigger
+  push:
+    branches: [main]
+  pull_request:
   workflow_dispatch:
 
-jobs:                 # ein oder mehrere Jobs
-  hello:              # Job-ID (frei wählbar)
-    name: First job
-    runs-on: ubuntu-latest  # Runner
-    steps:                  # Liste von Schritten
-      - name: Print a greeting
-        run: echo "The pipeline runs."
+permissions:
+  contents: read
 
-      - name: Show the context
-        run: |
-          echo "Branch:  $GITHUB_REF_NAME"
-          echo "Commit:  $GITHUB_SHA"
-          echo "Runner:  $RUNNER_OS"
+defaults:
+  run:
+    working-directory: beispiel-app
+
+jobs:
+  lint:
+    name: Lint (ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Check style and import order
+        run: ruff check .
