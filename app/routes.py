@@ -3,7 +3,6 @@ from __future__ import annotations
 from flask import Blueprint, current_app, jsonify, render_template, request
 
 from app.models import ValidationError, validate_done, validate_title
-import os
 
 bp = Blueprint("main", __name__)
 
